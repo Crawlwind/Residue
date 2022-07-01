@@ -30,8 +30,8 @@ class MyApp(QMainWindow):
         self.m_bar.setMinimum(30)
         self.m_bar.setMaximum(100)
         ### Slider link text
-        self.k_value = self.k_bar.valueChanged.connect(self.k_slider_change)
-        self.m_value = self.m_bar.valueChanged.connect(self.m_slider_change)
+        self.k_bar.valueChanged.connect(self.k_slider_change)
+        self.m_bar.valueChanged.connect(self.m_slider_change)
 
         ## Button settings
         self.select_button = self.findChild(QPushButton,"select_button")
