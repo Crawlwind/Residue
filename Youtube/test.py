@@ -15,7 +15,7 @@ class MyApp(QMainWindow):
         super(MyApp,self).__init__()
 
         # load UI file
-        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\myWin\\my.ui",self)
+        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\Youtube\\my.ui",self)
         self.setWindowTitle("Residue Sensing")
 
         # define widgets
@@ -43,6 +43,10 @@ class MyApp(QMainWindow):
         self.proceed_button.clicked.connect(self.proceed)
         # self.save_button.clicked.connect(self.save)
 
+        ## Image view setting -label
+        self.originview = self.findChild(QLabel,"originview")
+        self.segmentationview = self.findChild(QLabel,"segmentationview")
+
     # Slider link text
     def k_slider_change(self,value):
         self.k_value.setText(str(value))
@@ -52,16 +56,19 @@ class MyApp(QMainWindow):
     # Button link
     def select(self):
         self.img = QFileDialog.getOpenFileName(self,'Select Image','','Image File(*.jpg , *.png)')
-        img = self.img
-        # show origin image --exited with code=3221226505 in 7.979 seconds
-        x = img.shape[1]
-        y = img.shape[0]
-        frame = QImage(img, y, x, x*3,QImage.Format_RGB888)
-        pix = QPixmap.fromImage(frame)
-        self.item = QGraphicsPixmapItem(pix)
-        self.scene = QGraphicsScene()
-        self.scene.addItem(self.item)
-        self.segmentation_graphicsView.setScene(self.scene)
+        # img = self.img
+        # # show origin image --exited with code=3221226505 in 7.979 seconds
+        # x = img.shape[1]
+        # y = img.shape[0]
+        # frame = QImage(img, y, x, x*3,QImage.Format_RGB888)
+        # pix = QPixmap.fromImage(frame)
+        # self.item = QGraphicsPixmapItem(pix)
+        # self.scene = QGraphicsScene()
+        # self.scene.addItem(self.item)
+        # self.segmentation_graphicsView.setScene(self.scene)
+
+        self.pixmap = QPixmap(self.img[0])
+        self.originview.setPixmap(self.pixmap)
 
     # perform SLIC
     def proceed(self):
