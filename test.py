@@ -1,4 +1,12 @@
 # 最初的利用Ui_my.py的版本
+
+"""
+    使用pyqt5共有3种使用方法
+    1. win.ui -> win.py -> main.py:如下所示
+    2. win.ui -> win.py ->直接在win.py中修改:如Youtube\\imageprocess.py
+    3. win.ui -> main.py:如现有的main.py
+"""
+
 import sys
 import numpy
 import cv2
