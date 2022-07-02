@@ -15,7 +15,7 @@ class MyApp(QMainWindow):
         super(MyApp,self).__init__()
 
         # load UI file
-        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\Youtube\\my.ui",self)
+        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\other\\Youtube\\my.ui",self)
         self.setWindowTitle("Residue Sensing")
 
         # define widgets
@@ -113,7 +113,6 @@ class MyApp(QMainWindow):
         SLIC_centers = numpy.array(calculate_centers(step,SLIC_width,SLIC_height,SLIC_labimg))
 
         # main
-        # ## slic还要改，所有的return都要写过，因为原本是有global变量的，所以img默认为全局变量，不需要return
         generate_pixels(img,SLIC_height,SLIC_width,SLIC_ITERATIONS,SLIC_centers,step,SLIC_labimg,SLIC_m,SLIC_clusters)
         create_connectivity(img,SLIC_width,SLIC_height,SLIC_centers,SLIC_clusters)
         display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,[0.0, 0.0, 0.0])

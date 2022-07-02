@@ -1,6 +1,4 @@
 import numpy
-import sys
-import cv2
 import tqdm
 
 # using algorithm in 3.2 apply image gradients as computed in eq2:
