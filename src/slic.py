@@ -1,6 +1,4 @@
 import numpy
-import sys
-import cv2
 import tqdm
 
 # using algorithm in 3.2 apply image gradients as computed in eq2:
@@ -146,22 +144,6 @@ def display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,color):
     #end
 #end
 
-# def find_local_minimum(center):
-#     min_grad = 1
-#     loc_min = center
-#     for i in range(center[0] - 1, center[0] + 2):
-#         for j in range(center[1] - 1, center[1] + 2):
-#             c1 = SLIC_labimg[j+1, i]
-#             c2 = SLIC_labimg[j, i+1]
-#             c3 = SLIC_labimg[j, i]
-#             if ((c1[0] - c3[0])**2)**0.5 + ((c2[0] - c3[0])**2)**0.5 < min_grad:
-#                 min_grad = abs(c1[0] - c3[0]) + abs(c2[0] - c3[0])
-#                 loc_min = [i, j]
-#             #end
-#         #end
-#     #end
-#     return loc_min
-# #end
 
 def calculate_centers(step,SLIC_width,SLIC_height,SLIC_labimg):
     centers = []
@@ -187,27 +169,3 @@ def calculate_centers(step,SLIC_width,SLIC_height,SLIC_labimg):
 
     return centers
 #end
-
-# global variables
-# # python slic.py test_to_main.png 100 40
-# img = cv2.imread(sys.argv[1])
-
-# step = int((img.shape[0]*img.shape[1]/int(sys.argv[2]))**0.5)
-# SLIC_m = int(sys.argv[3])
-# SLIC_ITERATIONS = 4
-# SLIC_height, SLIC_width = img.shape[:2]
-# SLIC_labimg = cv2.cvtColor(img, cv2.COLOR_BGR2LAB).astype(numpy.float64)
-# SLIC_distances = 1 * numpy.ones(img.shape[:2])
-# SLIC_clusters = -1 * SLIC_distances
-# SLIC_center_counts = numpy.zeros(len(calculate_centers(step,SLIC_width,SLIC_height,SLIC_labimg)))
-# SLIC_centers = numpy.array(calculate_centers(step,SLIC_width,SLIC_height,SLIC_labimg))
-
-# # main
-# generate_pixels(img,SLIC_height,SLIC_width,SLIC_ITERATIONS,SLIC_centers,
-#                 step,SLIC_labimg,SLIC_m,SLIC_clusters)
-# create_connectivity(img,SLIC_width,SLIC_height,SLIC_centers,SLIC_clusters)
-# # calculate_centers()
-# display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,[0.0, 0.0, 0.0])
-# cv2.imshow("superpixels", img)
-# cv2.waitKey(0)
-# cv2.imwrite("100_80.jpg", img)

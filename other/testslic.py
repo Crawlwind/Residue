@@ -1,9 +1,9 @@
+import py_compile
 import numpy
 import sys
 import cv2
-import tqdm
 
-from slic import *
+from src.slic import *
 
 # python testslic.py test.png 500 40
 img = cv2.imread(sys.argv[1])
@@ -22,7 +22,6 @@ SLIC_centers = numpy.array(calculate_centers(step,SLIC_width,SLIC_height,SLIC_la
 generate_pixels(img,SLIC_height,SLIC_width,SLIC_ITERATIONS,SLIC_centers,
                 step,SLIC_labimg,SLIC_m,SLIC_clusters)
 create_connectivity(img,SLIC_width,SLIC_height,SLIC_centers,SLIC_clusters)
-# calculate_centers()
 display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,[0.0, 0.0, 0.0])
 cv2.imshow("superpixels", img)
 cv2.waitKey(0)
