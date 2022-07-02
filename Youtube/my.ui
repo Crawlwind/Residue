@@ -179,8 +179,8 @@
      <rect>
       <x>10</x>
       <y>260</y>
-      <width>501</width>
-      <height>521</height>
+      <width>520</width>
+      <height>520</height>
      </rect>
     </property>
     <property name="text">
@@ -195,8 +195,8 @@
      <rect>
       <x>540</x>
       <y>260</y>
-      <width>521</width>
-      <height>521</height>
+      <width>520</width>
+      <height>520</height>
      </rect>
     </property>
     <property name="text">

@@ -1,7 +1,7 @@
 import sys
 import numpy
 import cv2
-import tqdm
+import imutils
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtGui import *
@@ -41,7 +41,7 @@ class MyApp(QMainWindow):
         ### Button link
         self.select_button.clicked.connect(self.select)
         self.proceed_button.clicked.connect(self.proceed)
-        # self.save_button.clicked.connect(self.save)
+        self.save_button.clicked.connect(self.save)
 
         ## Image view setting -label
         self.originview = self.findChild(QLabel,"originview")
@@ -55,26 +55,55 @@ class MyApp(QMainWindow):
 
     # Button link
     def select(self):
-        self.img = QFileDialog.getOpenFileName(self,'Select Image','','Image File(*.jpg , *.png)')
-        # img = self.img
-        # # show origin image --exited with code=3221226505 in 7.979 seconds
-        # x = img.shape[1]
-        # y = img.shape[0]
-        # frame = QImage(img, y, x, x*3,QImage.Format_RGB888)
-        # pix = QPixmap.fromImage(frame)
-        # self.item = QGraphicsPixmapItem(pix)
-        # self.scene = QGraphicsScene()
-        # self.scene.addItem(self.item)
-        # self.segmentation_graphicsView.setScene(self.scene)
+        # self.filename = QFileDialog.getOpenFileName(self,'Select Image','','Image File(*.jpg , *.png)')
+        # self.img = cv2.imread(self.filename)
+        
+        # # img = self.img
+        # # # show origin image --exited with code=3221226505 in 7.979 seconds
+        # # x = img.shape[1]
+        # # y = img.shape[0]
+        # # frame = QImage(img, y, x, x*3,QImage.Format_RGB888)
+        # # pix = QPixmap.fromImage(frame)
+        # # self.item = QGraphicsPixmapItem(pix)
+        # # self.scene = QGraphicsScene()
+        # # self.scene.addItem(self.item)
+        # # self.segmentation_graphicsView.setScene(self.scene)
+    
+        # # self.pixmap = QPixmap(self.filename[0])
+        # # self.originview.setPixmap(self.pixmap)
 
-        self.pixmap = QPixmap(self.img[0])
-        self.originview.setPixmap(self.pixmap)
+        # image = self.img
+        # self.tmp = image
+        # # image = imutils.resize(image,width=520)
+        # frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # image = QImage(frame, frame.shape[1],frame.shape[0],frame.strides[0],QImage.Format_RGB888)
+        # self.originview.setPixmap(QtGui.QPixmap.fromImage(image))
+
+        self.filename = QFileDialog.getOpenFileName(filter="Image (*.*)")[0]
+        self.image = cv2.imread(self.filename)
+        self.setOriginImg(self.image)
+        
+    def setOriginImg(self,image):
+        self.tmp = image
+        image = imutils.resize(image,width=520)
+        frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = QImage(frame, frame.shape[1],frame.shape[0],frame.strides[0],QImage.Format_RGB888)
+        self.originview.setPixmap(QtGui.QPixmap.fromImage(image))
+
+    def setSegImg(self,image):
+        self.tmp = image
+        image = imutils.resize(image,width=520)
+        frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = QImage(frame, frame.shape[1],frame.shape[0],frame.strides[0],QImage.Format_RGB888)
+        self.segmentationview.setPixmap(QtGui.QPixmap.fromImage(image))
 
     # perform SLIC
     def proceed(self):
-        img = self.img
-        step = int((img.shape[0]*img.shape[1]/int(self.k_value))**0.5)
-        SLIC_m = int(self.m_value)
+        img = self.image
+        k = self.k_bar.value()
+        m = self.m_bar.value()
+        step = int((img.shape[0]*img.shape[1]/int(k))**0.5)
+        SLIC_m = int(m)
         SLIC_ITERATIONS = 4
         SLIC_height, SLIC_width = img.shape[:2]
         SLIC_labimg = cv2.cvtColor(img, cv2.COLOR_BGR2LAB).astype(numpy.float64)
@@ -84,19 +113,18 @@ class MyApp(QMainWindow):
         SLIC_centers = numpy.array(calculate_centers(step,SLIC_width,SLIC_height,SLIC_labimg))
 
         # main
-        generate_pixels(img,SLIC_height,SLIC_width,SLIC_ITERATIONS,SLIC_centers,
-                        step,SLIC_labimg,SLIC_m,SLIC_clusters)
+        # ## slic还要改，所有的return都要写过，因为原本是有global变量的，所以img默认为全局变量，不需要return
+        generate_pixels(img,SLIC_height,SLIC_width,SLIC_ITERATIONS,SLIC_centers,step,SLIC_labimg,SLIC_m,SLIC_clusters)
         create_connectivity(img,SLIC_width,SLIC_height,SLIC_centers,SLIC_clusters)
         display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,[0.0, 0.0, 0.0])
         
-        # # show img 待处理
-        # cv2.imshow("superpixels", img)
-        # cv2.waitKey(0)
-        # cv2.imwrite("100_80.jpg", img)
+        # show
+        self.setSegImg(img)
     
-    # def save(self):
-    #     img = self.segmentation_graphicsView
-    #     # cv2.imwrite(savepath, img)
+    def save(self):
+        filename = QFileDialog.getSaveFileName(filter="JPG(*.jpg);;PNG(*.png);;TIFF(*.tiff);;BMP(*.bmp)")[0]
+        cv2.imwrite(filename,self.tmp)
+        print('Image saved as:',filename)
 
 app = QApplication(sys.argv)
 window = MyApp()
