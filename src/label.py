@@ -2,7 +2,10 @@ import numpy
 import cv2
 import imutils
 
-def quick_lable():
+def quick_lable(img):
+    pass
+
+def change_label(img):
     pass
 
 def create_label(img,SLIC_width,SLIC_height,SLIC_centers,SLIC_clusters):

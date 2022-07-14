@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 from slic import *
+from label import *
 
 class MyApp(QMainWindow):
     def __init__(self):
@@ -133,7 +134,22 @@ class MyApp(QMainWindow):
     def label(self):
         self.image = cv2.imread(self.filename)
         img = self.performSlic(self.image)
+        # img = cv2.imread(self.segfilename)
+
+        # still need quick label
+        # img = quick_lable(img)
+
+        # show
         self.setLabelImg(img)
+
+    def edit(self):
+        # change results after quick label
+        # img = change_label(img)
+        pass
+
+    def save_label(self):
+        # save label image into txt/csv file
+        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
