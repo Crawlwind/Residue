@@ -3,7 +3,7 @@ import cv2
 import imutils
 
 def quick_lable():
-    img = cv2.imread(filename)
+    pass
 
 def create_label(img,SLIC_width,SLIC_height,SLIC_centers,SLIC_clusters):
     label = 0
