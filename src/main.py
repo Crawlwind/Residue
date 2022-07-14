@@ -41,15 +41,25 @@ class MyApp(QMainWindow):
         self.select_button = self.findChild(QPushButton,"select_button")
         self.proceed_button = self.findChild(QPushButton,"proceed_button")
         self.save_button = self.findChild(QPushButton,"save_button")
+        self.label_button = self.findChild(QPushButton,"label_button")
+        self.edit_button = self.findChild(QPushButton,"edit_button")
+        self.save_image_button = self.findChild(QPushButton,"save_image_button")
+        self.save_label_button = self.findChild(QPushButton,"save_label_button")
+
 
         ## Button link
         self.select_button.clicked.connect(self.select)
         self.proceed_button.clicked.connect(self.proceed)
         self.save_button.clicked.connect(self.save)
+        self.label_button.clicked.connect(self.label)
+        # self.edit_button.clicked.connect(self.edit)
+        self.save_image_button.clicked.connect(self.save)
+        # self.save_label_button.clicked.connect(self.save)
 
         # Image view settings - label
         self.originview = self.findChild(QLabel,"originview")
         self.segmentationview = self.findChild(QLabel,"segmentationview")
+        self.labelview = self.findChild(QLabel,"labelview")
 
     # Slider link text
     def k_slider_change(self,value):
@@ -109,8 +119,21 @@ class MyApp(QMainWindow):
     
     def save(self):
         filename = QFileDialog.getSaveFileName(filter="JPG(*.jpg);;PNG(*.png);;TIFF(*.tiff);;BMP(*.bmp)")[0]
+        self.segfilename = filename
         cv2.imwrite(filename,self.tmp)
         print('Image saved as:',filename)
+
+    def setLabelImg(self,image):
+        self.tmp = image
+        image = imutils.resize(image,width=520)
+        frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = QImage(frame, frame.shape[1],frame.shape[0],frame.strides[0],QImage.Format_RGB888)
+        self.labelview.setPixmap(QtGui.QPixmap.fromImage(image))
+
+    def label(self):
+        self.image = cv2.imread(self.filename)
+        img = self.performSlic(self.image)
+        self.setLabelImg(img)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
