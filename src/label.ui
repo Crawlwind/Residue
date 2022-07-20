@@ -32,28 +32,10 @@
      <string>Quick Label</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="edit_button">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>20</y>
-      <width>75</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Edit</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="save_image_button">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>150</x>
       <y>20</y>
       <width>101</width>
       <height>31</height>
@@ -71,7 +53,7 @@
    <widget class="QPushButton" name="save_label_button">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>270</x>
       <y>20</y>
       <width>101</width>
       <height>31</height>
@@ -129,7 +111,7 @@
    <widget class="QPushButton" name="cover_button">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>390</x>
       <y>20</y>
       <width>131</width>
       <height>31</height>
