@@ -169,3 +169,18 @@ def calculate_centers(step,SLIC_width,SLIC_height,SLIC_labimg):
 
     return centers
 #end
+
+def paint_centers(img,SLIC_centers,SLIC_width,SLIC_height):
+    for k in range(len(SLIC_centers)):
+        x = SLIC_centers[k][3].astype(int)
+        y = SLIC_centers[k][4].astype(int)
+        if x < SLIC_width and y<SLIC_height:
+            img[y,x] = [0,0,255]
+
+def which_cluster(x,y,SLIC_width,SLIC_height,SLIC_clusters):
+    for i in range(SLIC_width):
+            for j in range(SLIC_height):
+                if i==x and j==y:
+                    idx = SLIC_clusters[y,x]
+    # 可删除
+    print(idx)
