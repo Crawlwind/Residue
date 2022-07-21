@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>998</width>
-    <height>629</height>
+    <width>1011</width>
+    <height>705</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,8 +53,8 @@
    <widget class="QPushButton" name="save_label_button">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>240</y>
+      <x>880</x>
+      <y>290</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -73,8 +73,8 @@
      <rect>
       <x>30</x>
       <y>60</y>
-      <width>520</width>
-      <height>520</height>
+      <width>630</width>
+      <height>600</height>
      </rect>
     </property>
     <property name="text">
@@ -123,8 +123,8 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>670</x>
-      <y>80</y>
+      <x>680</x>
+      <y>130</y>
       <width>151</width>
       <height>31</height>
      </rect>
@@ -146,8 +146,8 @@
    <widget class="QLabel" name="cluster_label">
     <property name="geometry">
      <rect>
-      <x>830</x>
-      <y>80</y>
+      <x>840</x>
+      <y>130</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -164,8 +164,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>670</x>
-      <y>140</y>
+      <x>680</x>
+      <y>190</y>
       <width>61</width>
       <height>31</height>
      </rect>
@@ -187,8 +187,8 @@
    <widget class="QPushButton" name="apply_button">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>190</y>
+      <x>880</x>
+      <y>240</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -205,8 +205,8 @@
    <widget class="QLabel" name="sp_label">
     <property name="geometry">
      <rect>
-      <x>740</x>
-      <y>140</y>
+      <x>750</x>
+      <y>190</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -223,8 +223,8 @@
    <widget class="QPushButton" name="edit_button">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>140</y>
+      <x>880</x>
+      <y>190</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -244,7 +244,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>998</width>
+     <width>1011</width>
      <height>21</height>
     </rect>
    </property>

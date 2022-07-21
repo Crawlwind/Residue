@@ -26,7 +26,7 @@ class LabelPage(QMainWindow):
             load UI file
         """
         uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\src\\label.ui",self)
-        self.setWindowTitle("Residue Sensing")
+        self.setWindowTitle("Label Page")
 
         """
             define widgets
@@ -65,7 +65,7 @@ class LabelPage(QMainWindow):
     
     def setLabelImg(self,image):
         self.tmp = image
-        image = imutils.resize(image,width=520)
+        image = imutils.resize(image,width=630)
         frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = QImage(frame, frame.shape[1],frame.shape[0],frame.strides[0],QImage.Format_RGB888)
         self.labelview.setPixmap(QtGui.QPixmap.fromImage(image))
@@ -107,8 +107,8 @@ class LabelPage(QMainWindow):
                 if sp_label[j,i] == 1:
                     img[j,i] = [0,153,255]
                 elif sp_label[j,i] != -5:
-                    img[j,i] = [0,0,0]
-
+                    img[j,i] = [128,128,128]
+        display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,[0, 184, 46])
         # show
         self.setLabelImg(img)
 
@@ -129,13 +129,13 @@ class LabelPage(QMainWindow):
         y = event.pos().y()
         
         # formula: transform pos in label into pos in original img
-        new_height = SLIC_height * 520 // SLIC_width
-        start_point = (0,(520-new_height)//2)
+        new_height = SLIC_height * 630 // SLIC_width
+        start_point = (0,(600-new_height)//2)
         new_pos = (x - start_point[0], y-start_point[1])
-        resize_pos = (new_pos[0]*SLIC_width//520,new_pos[1]*SLIC_width//520)
+        resize_pos = (new_pos[0]*SLIC_width//630,new_pos[1]*SLIC_width//630)
         final_x = resize_pos[0]
         final_y = resize_pos[1]
-
+        self.tmppos = resize_pos
         # show belonged cluster
         belonged_cluster = which_cluster(final_x,final_y,SLIC_width,SLIC_height,SLIC_clusters)
         self.cluster_label.setText(str(int(belonged_cluster)))
@@ -162,11 +162,26 @@ class LabelPage(QMainWindow):
     # save edited label
     def apply_label(self):
         if self.sp_label.text() == 'Residue':
-            # sp_label = 1
-            print("1")
+            x = self.tmppos[0]
+            y = self.tmppos[1]
+            dx = unit_size[0]
+            dy = unit_size[1]
+            for i in range(x-dx,x+dx):
+                for j in range(y-dy,y+dy):
+                    if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
+                        if sp_label[j,i] == -5:
+                            sp_label[j,i] = 1
+
         elif self.sp_label.text() == 'Others':
-            # sp_label = -1
-            print("-1")
+            x = self.tmppos[0]
+            y = self.tmppos[1]
+            dx = unit_size[0]
+            dy = unit_size[1]
+            for i in range(x-dx,x+dx):
+                for j in range(y-dy,y+dy):
+                    if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
+                        if sp_label[j,i] == -5:
+                            sp_label[j,i] = -1
         else:
             QMessageBox.about(self, "Error", "Please check the spelling of the label.")
 
@@ -178,7 +193,25 @@ class LabelPage(QMainWindow):
 
     # change all label messages into csv/txt file
     def save_label(self):
-        pass
+        data = []
+        name = QFileDialog.getSaveFileName(self, 'Save File',"", "Text files (*.txt)")
+        # data form:
+        # belonged cluster, center_x, center_y, label
+        for i in range(len(SLIC_centers)):
+            x = SLIC_centers[i][3].astype(int)
+            y = SLIC_centers[i][4].astype(int)
+            if sp_label[y,x] == 1:
+                # data.append([SLIC_clusters[y,x],x,y,Residue])
+                data.append([SLIC_clusters[y,x],x,y,sp_label[y,x]])
+            elif sp_label[y,x] == -1:
+            #     data.append([SLIC_clusters[y,x],x,y,"Others"])
+                data.append([SLIC_clusters[y,x],x,y,sp_label[y,x]])
+            # else:
+            #     data.append([SLIC_clusters[y,x],x,y,"Not defined"])
+                # data.append([SLIC_clusters[y,x],x,y,sp_label[y,x]])
+
+        numpy.savetxt(name[0],data)
+
 
 '''
     First Page: Main Window
@@ -268,7 +301,7 @@ class SegApp(QMainWindow):
     # perform SLIC
     def performSlic(self,img):
 
-        global SLIC_centers, SLIC_clusters, SLIC_height, SLIC_width
+        global SLIC_centers, SLIC_clusters, SLIC_height, SLIC_width, unit_size
 
         img = self.image
         k = self.k_bar.value()
@@ -282,15 +315,13 @@ class SegApp(QMainWindow):
         SLIC_clusters = -1 * SLIC_distances
         SLIC_center_counts = numpy.zeros(len(calculate_centers(step,SLIC_width,SLIC_height,SLIC_labimg)))
         SLIC_centers = numpy.array(calculate_centers(step,SLIC_width,SLIC_height,SLIC_labimg))
-
+        
         # main
         generate_pixels(img,SLIC_height,SLIC_width,SLIC_ITERATIONS,SLIC_centers,step,SLIC_labimg,SLIC_m,SLIC_clusters)
         create_connectivity(img,SLIC_width,SLIC_height,SLIC_centers,SLIC_clusters)
-        display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,[0.0, 0.0, 0.0])
-        x = 2
-        y = 2
-        which_cluster(x,y,SLIC_width,SLIC_height,SLIC_clusters)
-        paint_centers(img,SLIC_centers,SLIC_width,SLIC_height)
+        display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,[0, 184, 46])
+        unit_size = calculate_unit_size(SLIC_centers,SLIC_height,SLIC_width)
+        # paint_centers(img,SLIC_centers,SLIC_width,SLIC_height)
 
         return img
     
@@ -331,7 +362,8 @@ if __name__ == '__main__':
     SLIC_clusters = []
     SLIC_height = 0
     SLIC_width = 0
-
+    
+    numpy.set_printoptions(suppress=True)
     # main
     app = QApplication(sys.argv)
     window = SegApp()

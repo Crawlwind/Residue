@@ -1,5 +1,6 @@
 import numpy
 import tqdm
+import math
 
 # using algorithm in 3.2 apply image gradients as computed in eq2:
 # G(x,y) = ||I(x+1,y) - I(x-1,y)||^2+ ||I(x,y+1) - I(x,y-1)||^2
@@ -135,7 +136,8 @@ def display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,color):
 
             if nr_p >= 2:
                 is_taken[j, i] = True
-                contours.append([j, i])
+                k = SLIC_clusters[j, i]
+                contours.append([j, i, k])
             #end
         #end
     #end
@@ -183,3 +185,11 @@ def which_cluster(x,y,SLIC_width,SLIC_height,SLIC_clusters):
                 if i==x and j==y:
                     idx = SLIC_clusters[y,x]
     return idx
+
+def calculate_unit_size(SLIC_centers,SLIC_height,SLIC_width):
+    ny = int(math.sqrt(len(SLIC_centers)*SLIC_height/SLIC_width))
+    nx = int(ny * SLIC_width/SLIC_height)
+    dx = SLIC_width//nx
+    dy = SLIC_height//ny
+    unit_size = (dx, dy)
+    return unit_size
