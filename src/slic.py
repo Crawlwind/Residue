@@ -182,5 +182,4 @@ def which_cluster(x,y,SLIC_width,SLIC_height,SLIC_clusters):
             for j in range(SLIC_height):
                 if i==x and j==y:
                     idx = SLIC_clusters[y,x]
-    # 可删除
-    print(idx)
+    return idx

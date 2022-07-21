@@ -31,24 +31,37 @@ class LabelPage(QMainWindow):
         """
             define widgets
         """
-        # Button settings
+        # Page setting
+        # self.centralwidget = self.findChild(QWidget,"centralwidget")
+
+        # Button settings(QPushButton)
         self.quicklabel_button = self.findChild(QPushButton,"quicklabel_button")
-        # self.edit_button = self.findChild(QPushButton,"edit_button")
-        self.save_image_button = self.findChild(QPushButton,"save_image_button")
-        self.save_label_button = self.findChild(QPushButton,"save_label_button")
         self.cover_button = self.findChild(QPushButton,"cover_button")
+        self.clear_button = self.findChild(QPushButton,"clear_button")
+        self.save_image_button = self.findChild(QPushButton,"save_image_button")
+
+        self.edit_button = self.findChild(QPushButton,"edit_button")
+        self.apply_button = self.findChild(QPushButton,"apply_button")
+        self.save_label_button = self.findChild(QPushButton,"save_label_button")
 
         ## Button link 
         self.quicklabel_button.clicked.connect(self.quicklabel)
-        # self.edit_button.clicked.connect(self.edit)
-        self.save_image_button.clicked.connect(self.save_image)
-        self.save_label_button.clicked.connect(self.save_label)
         self.cover_button.clicked.connect(self.generate_cover)
+        self.clear_button.clicked.connect(self.clear_cover)
+        self.save_image_button.clicked.connect(self.save_image)
 
-        # Image view settings - label
+        self.edit_button.clicked.connect(self.edit)
+        self.apply_button.clicked.connect(self.apply_label)
+        self.save_label_button.clicked.connect(self.save_label)
+
+        # Image view settings(QLabel)
         self.labelview = self.findChild(QLabel,"labelview")
         ## click part of image
-        self.labelview.mousePressEvent = self.edit
+        self.labelview.mousePressEvent = self.clickimg
+
+        # Text settings(QLable)
+        self.cluster_label = self.findChild(QLabel,"cluster_label")
+        self.sp_label = self.findChild(QLabel,"sp_label")
     
     def setLabelImg(self,image):
         self.tmp = image
@@ -59,15 +72,55 @@ class LabelPage(QMainWindow):
 
     def quicklabel(self):
         
-        global seg_file, SLIC_centers, SLIC_clusters
+        global seg_file, SLIC_centers, SLIC_clusters, origin_file
 
         # show segmentation reslut
+        # to do: 放原图(origin_file)更好还是放处理过后的图更好(seg_file)
         self.img = cv2.imread(seg_file)
+        img = self.img
         self.setLabelImg(self.img)
 
-        # quick label
+        # define global variable sp_label: superpixels' label
+        global sp_label
+        helper = 1 * numpy.ones(img.shape[:2])
+        sp_label = -5 * helper
 
-    def edit(self,event):
+        # quick label
+        for i in range(SLIC_width):
+            for j in range(SLIC_height):
+                k = int(SLIC_clusters[j,i])
+                # resiude: 1; others: -1
+                # quick label standard: center pixel's r_value > 100
+                if k != -1 and SLIC_centers[k][0] > 100:
+                    sp_label[j,i] = 1
+                elif k != -1:
+                    sp_label[j,i] = -1
+
+    # residue --light yellow; ground --original color
+    def generate_cover(self):
+        img = self.img
+        # process
+        global sp_label
+        for i in range(SLIC_width):
+            for j in range(SLIC_height):
+                # residue: medium yellow
+                if sp_label[j,i] == 1:
+                    img[j,i] = [0,153,255]
+                elif sp_label[j,i] != -5:
+                    img[j,i] = [0,0,0]
+
+        # show
+        self.setLabelImg(img)
+
+    def clear_cover(self):
+        # process
+        img = cv2.imread(seg_file)
+        # show
+        self.setLabelImg(img)
+    
+    # After clicking the image, get the pixel's location in its original form
+    # display the cluster which it belongs and its current label
+    def clickimg(self,event):
 
         global SLIC_centers, SLIC_clusters, SLIC_height, SLIC_width
 
@@ -80,14 +133,42 @@ class LabelPage(QMainWindow):
         start_point = (0,(520-new_height)//2)
         new_pos = (x - start_point[0], y-start_point[1])
         resize_pos = (new_pos[0]*SLIC_width//520,new_pos[1]*SLIC_width//520)
-        which_cluster(resize_pos[0],resize_pos[1],SLIC_width,SLIC_height,SLIC_clusters)
-        
-        # generate polygon click area (superpixels)
-        # newPolygon = QPolygonF()
-        # for p in points:
-        #     newPolygon.append(QPoint(p[0], p[1]))
+        final_x = resize_pos[0]
+        final_y = resize_pos[1]
 
-        # modify labels
+        # show belonged cluster
+        belonged_cluster = which_cluster(final_x,final_y,SLIC_width,SLIC_height,SLIC_clusters)
+        self.cluster_label.setText(str(int(belonged_cluster)))
+
+        # show label
+        if sp_label[final_y,final_x] == 1:
+            self.sp_label.setText("Residue")
+        elif sp_label[final_y,final_x] == -1:
+            self.sp_label.setText("Others")
+        else:
+            self.sp_label.setText("Not defined")
+
+    # Edit existing label
+    def edit(self):
+        self.labelEdit = QLineEdit(self.sp_label.text())
+        self.labelEdit.show()
+        self.labelEdit.returnPressed.connect(self.finish_edit)
+
+    # Display edited label
+    def finish_edit(self):
+        self.sp_label.setText(self.labelEdit.text())
+        self.labelEdit.hide()
+    
+    # save edited label
+    def apply_label(self):
+        if self.sp_label.text() == 'Residue':
+            # sp_label = 1
+            print("1")
+        elif self.sp_label.text() == 'Others':
+            # sp_label = -1
+            print("-1")
+        else:
+            QMessageBox.about(self, "Error", "Please check the spelling of the label.")
 
     def save_image(self):
         filename = QFileDialog.getSaveFileName(filter="JPG(*.jpg);;PNG(*.png);;TIFF(*.tiff);;BMP(*.bmp)")[0]
@@ -95,15 +176,8 @@ class LabelPage(QMainWindow):
         cv2.imwrite(filename,self.tmp)
         print('Image saved as:',filename)
 
+    # change all label messages into csv/txt file
     def save_label(self):
-
-        # change label messages into csv/txt file
-
-        pass
-
-    def generate_cover(self):
-        # residue --light yellow; ground --original color
-
         pass
 
 '''
