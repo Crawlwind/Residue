@@ -29,7 +29,7 @@ Python 3.9.10 + Opencv 4.5.5 + Pyqt5
 
 缺乏：
 - Proceed之后拖拽进度条会直接处理已proceed的图片
-<img src="https://user-images.githubusercontent.com/95983476/176983707-da678902-2ca4-420c-b5f9-cca61b45694c.png" width="20">
+<img src="https://user-images.githubusercontent.com/95983476/176983707-da678902-2ca4-420c-b5f9-cca61b45694c.png" width="500">
 
 **2022.7.2:**
 
