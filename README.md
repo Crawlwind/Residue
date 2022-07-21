@@ -49,6 +49,7 @@ Python 3.9.10 + Opencv 4.5.5 + Pyqt5
 - get mouse position
 - 当前鼠标位置和原始图片坐标系转换
 - 确认当前鼠标位置像素点所属cluster
+- save image
 
 **2022.7.20:**
 - quick label:根据像素点R值，确认当前cluster的label
