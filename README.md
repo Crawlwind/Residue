@@ -2,7 +2,7 @@
 ## Tools:
 Python 3.9.10 + Opencv 4.5.5 + Pyqt5
 
-## Progress:
+## Log:
 **2022.6.15:**
 
 完成：SLIC
@@ -34,3 +34,11 @@ Python 3.9.10 + Opencv 4.5.5 + Pyqt5
 **2022.7.2:**
 
 完成：拖动进度条实现实时更新
+
+**2022.7.18:**
+
+完成：确认centers并paint them
+
+**2022.7.19:**
+
+完成：确认clusters，paint them
