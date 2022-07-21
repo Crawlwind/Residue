@@ -37,8 +37,21 @@ Python 3.9.10 + Opencv 4.5.5 + Pyqt5
 
 **2022.7.18:**
 
-完成：确认centers并paint them
+完成：
+- 确认centers，paint them
+- 确认clusters，paint them
 
 **2022.7.19:**
 
-完成：确认clusters，paint them
+完成：
+- superpixel分割和label分成两个界面
+- label page的初步搭建
+- get mouse position
+- 当前鼠标位置和原始图片坐标系转换
+- 确认当前鼠标位置像素点所属cluster
+
+**2022.7.20:**
+- quick label:根据像素点R值，确认当前cluster的label
+- editable text:可编辑quick label生成的label
+- generate cover/clear cover
+- apply:确认检查单词拼写情况Error
