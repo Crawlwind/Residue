@@ -151,6 +151,13 @@ class LabelPage(QMainWindow):
     # Edit existing label
     def edit(self):
         self.labelEdit = QLineEdit(self.sp_label.text())
+
+        self.labelEdit.setFixedHeight(60)
+        font = self.labelEdit.font()
+        font.setPointSize(14)
+        self.labelEdit.setFont(font)
+        self.labelEdit.setWindowTitle("Label")
+        
         self.labelEdit.show()
         self.labelEdit.returnPressed.connect(self.finish_edit)
 
@@ -161,26 +168,36 @@ class LabelPage(QMainWindow):
     
     # save edited label
     def apply_label(self):
+        x = self.tmppos[0]
+        y = self.tmppos[1]
+        dx = unit_size[0]
+        dy = unit_size[1]
+        k = SLIC_clusters[y,x]
+
         if self.sp_label.text() == 'Residue':
-            x = self.tmppos[0]
-            y = self.tmppos[1]
-            dx = unit_size[0]
-            dy = unit_size[1]
-            for i in range(x-dx,x+dx):
-                for j in range(y-dy,y+dy):
-                    if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
-                        if sp_label[j,i] == -5:
+            if k == -1: # for dots
+                for i in range(x-dx,x+dx):
+                    for j in range(y-dy,y+dy):
+                        if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
+                            if sp_label[j,i] == -5:
+                                sp_label[j,i] = 1
+            else: # for superpixels
+                for i in range(SLIC_width):
+                    for j in range(SLIC_height):
+                        if SLIC_clusters[j,i] == k:
                             sp_label[j,i] = 1
 
         elif self.sp_label.text() == 'Others':
-            x = self.tmppos[0]
-            y = self.tmppos[1]
-            dx = unit_size[0]
-            dy = unit_size[1]
-            for i in range(x-dx,x+dx):
-                for j in range(y-dy,y+dy):
-                    if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
-                        if sp_label[j,i] == -5:
+            if k == -1: # for dots
+                for i in range(x-dx,x+dx):
+                    for j in range(y-dy,y+dy):
+                        if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
+                            if sp_label[j,i] == -5:
+                                sp_label[j,i] = -1
+            else: # for superpixels
+                for i in range(SLIC_width):
+                    for j in range(SLIC_height):
+                        if SLIC_clusters[j,i] == k:
                             sp_label[j,i] = -1
         else:
             QMessageBox.about(self, "Error", "Please check the spelling of the label.")
