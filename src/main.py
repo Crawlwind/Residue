@@ -157,7 +157,7 @@ class LabelPage(QMainWindow):
         font.setPointSize(14)
         self.labelEdit.setFont(font)
         self.labelEdit.setWindowTitle("Label")
-        
+
         self.labelEdit.show()
         self.labelEdit.returnPressed.connect(self.finish_edit)
 
@@ -200,7 +200,22 @@ class LabelPage(QMainWindow):
                         if SLIC_clusters[j,i] == k:
                             sp_label[j,i] = -1
         else:
-            QMessageBox.about(self, "Error", "Please check the spelling of the label.")
+            # QMessageBox.about(self, "Error", "Please check the spelling of the label.")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+        
+            # setting message for Message Box
+            msg.setText("Warning: Please check the spelling of the label.")
+            font = msg.font()
+            font.setPointSize(12)
+            msg.setFont(font)
+            msg.setWindowTitle("Warning")
+            
+            # declaring buttons on Message Box
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            
+            # start the app
+            retval = msg.exec_()
 
     def save_image(self):
         filename = QFileDialog.getSaveFileName(filter="JPG(*.jpg);;PNG(*.png);;TIFF(*.tiff);;BMP(*.bmp)")[0]
