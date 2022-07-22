@@ -62,3 +62,4 @@ Run main.py
 
 **2022.7.21:**
 完成：所有基础功能，但美观与更便捷的设置及更有效的功能仍待改进
+<img src= "https://user-images.githubusercontent.com/95983476/180356985-775a8c21-9dda-4b41-9bb9-05f07d91ddb0.png" width="500">
