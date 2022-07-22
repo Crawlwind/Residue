@@ -4,6 +4,10 @@ Python 3.9.10 + Opencv 4.5.5 + Pyqt5
 
 ## Usage:
 Run main.py
+```
+cd src
+python main.py
+```
 
 ## Log:
 **2022.6.15:**
@@ -32,7 +36,7 @@ Run main.py
 
 缺乏：
 - Proceed之后拖拽进度条会直接处理已proceed的图片
-<img src="https://user-images.githubusercontent.com/95983476/176983707-da678902-2ca4-420c-b5f9-cca61b45694c.png" width="500">
+<img src="https://user-images.githubusercontent.com/95983476/180357254-54057dec-ea26-425b-adc9-0bd552c73022.png" width="500">
 
 **2022.7.2:**
 
