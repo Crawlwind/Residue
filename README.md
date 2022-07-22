@@ -2,6 +2,9 @@
 ## Tools:
 Python 3.9.10 + Opencv 4.5.5 + Pyqt5
 
+## Usage:
+Run main.py
+
 ## Log:
 **2022.6.15:**
 
@@ -56,3 +59,6 @@ Python 3.9.10 + Opencv 4.5.5 + Pyqt5
 - editable text:可编辑quick label生成的label
 - generate cover/clear cover
 - apply:确认检查单词拼写情况Error
+
+**2022.7.21:**
+完成：所有基础功能，但美观与更便捷的设置及更有效的功能仍待改进
