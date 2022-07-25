@@ -32,9 +32,6 @@ class LabelPage(QMainWindow):
         """
             define widgets
         """
-        # Page setting
-        # self.centralwidget = self.findChild(QWidget,"centralwidget")
-
         # Button settings(QPushButton)
         self.quicklabel_button = self.findChild(QPushButton,"quicklabel_button")
         self.cover_button = self.findChild(QPushButton,"cover_button")
@@ -76,7 +73,6 @@ class LabelPage(QMainWindow):
         global seg_file, SLIC_centers, SLIC_clusters, origin_file
 
         # show segmentation reslut
-        # to do: 放原图(origin_file)更好还是放处理过后的图更好(seg_file)
         self.img = cv2.imread(seg_file)
         img = self.img
         self.setLabelImg(self.img)
@@ -226,6 +222,7 @@ class LabelPage(QMainWindow):
                         for j in range(SLIC_height):
                             if SLIC_clusters[j,i] == k:
                                 sp_label[j,i] = -1
+
                     # claim success message
                     msg = QMessageBox()
                     msg.setIcon(QMessageBox.Information)
@@ -609,7 +606,6 @@ class SegApp(QMainWindow):
         create_connectivity(img,SLIC_width,SLIC_height,SLIC_centers,SLIC_clusters)
         display_contours(img,SLIC_width,SLIC_height,SLIC_clusters,[0, 184, 46])
         unit_size = calculate_unit_size(SLIC_centers,SLIC_height,SLIC_width)
-        # paint_centers(img,SLIC_centers,SLIC_width,SLIC_height)
 
         return img
     
@@ -651,7 +647,6 @@ if __name__ == '__main__':
     SLIC_height = 0
     SLIC_width = 0
     
-    numpy.set_printoptions(suppress=True)
     # main
     app = QApplication(sys.argv)
     window = SegApp()
