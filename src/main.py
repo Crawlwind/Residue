@@ -11,7 +11,6 @@ from PyQt5.QtCore import *
 from pyparsing import col
 
 from slic import *
-# from label import *
 
 '''
     Second page: Label page
@@ -27,7 +26,7 @@ class LabelPage(QMainWindow):
         """ 
             load UI file
         """
-        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\src\\label.ui",self)
+        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\src\\second.ui",self)
         self.setWindowTitle("Label Page")
 
         """
@@ -516,7 +515,7 @@ class SegApp(QMainWindow):
         """ 
             load UI file
         """
-        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\src\\my.ui",self)
+        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\src\\first.ui",self)
         self.setWindowTitle("Residue Sensing")
 
         """

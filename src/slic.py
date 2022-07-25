@@ -2,6 +2,9 @@ import numpy
 import tqdm
 import math
 
+'''
+    reference: https://github.com/aleenaniklaus/SLIC_superpixels.git
+'''
 # using algorithm in 3.2 apply image gradients as computed in eq2:
 # G(x,y) = ||I(x+1,y) - I(x-1,y)||^2+ ||I(x,y+1) - I(x,y-1)||^2
 
