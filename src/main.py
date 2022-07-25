@@ -2,6 +2,7 @@ import sys
 import numpy
 import cv2
 import imutils
+import pandas as pd
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtGui import *
@@ -225,24 +226,45 @@ class LabelPage(QMainWindow):
 
     # change all label messages into csv/txt file
     def save_label(self):
-        data = []
-        name = QFileDialog.getSaveFileName(self, 'Save File',"", "Text files (*.txt)")
+        name = QFileDialog.getSaveFileName(self, 'Save File',"", "Text File(*.txt);;Excel(*.xlsx)")
         # data form:
         # belonged cluster, center_x, center_y, label
+        cluster = []
+        center_x = []
+        center_y = []
+        label_number = []
+        label_name = []
+
         for i in range(len(SLIC_centers)):
             x = SLIC_centers[i][3].astype(int)
             y = SLIC_centers[i][4].astype(int)
             if sp_label[y,x] == 1:
-                # data.append([SLIC_clusters[y,x],x,y,Residue])
-                data.append([SLIC_clusters[y,x],x,y,sp_label[y,x]])
+                cluster.append(SLIC_clusters[y,x])
+                center_x.append(x)
+                center_y.append(y)
+                label_number.append(sp_label[y,x])
+                label_name.append("Residue")
             elif sp_label[y,x] == -1:
-            #     data.append([SLIC_clusters[y,x],x,y,"Others"])
-                data.append([SLIC_clusters[y,x],x,y,sp_label[y,x]])
-            # else:
-            #     data.append([SLIC_clusters[y,x],x,y,"Not defined"])
-                # data.append([SLIC_clusters[y,x],x,y,sp_label[y,x]])
+                cluster.append(SLIC_clusters[y,x])
+                center_x.append(x)
+                center_y.append(y)
+                label_number.append(sp_label[y,x])
+                label_name.append("Others")
+            else:
+                cluster.append(SLIC_clusters[y,x])
+                center_x.append(x)
+                center_y.append(y)
+                label_number.append(sp_label[y,x])
+                label_name.append("Not defined")
 
-        numpy.savetxt(name[0],data)
+        col1 = "cluster"
+        col2 = "center_x"
+        col3 = "center_y"
+        col4 = "label_number"
+        col5 = "label_name"
+
+        data = pd.DataFrame({col1:cluster,col2:center_x,col3:center_y,col4:label_number,col5:label_name})
+        data.to_excel(name[0], sheet_name='sheet1', index=False)
 
 
 '''
