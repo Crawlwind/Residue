@@ -12,5 +12,5 @@ pip install -r requirements.txt
 cd src
 python main.py
 ```
-<img src="https://user-images.githubusercontent.com/95983476/180357254-54057dec-ea26-425b-adc9-0bd552c73022.png" width="550">
+<img src="https://user-images.githubusercontent.com/95983476/180882440-1fe383db-812e-4630-b00f-8b141a392302.png" width="550">
 <img src= "https://user-images.githubusercontent.com/95983476/180881912-51dbb138-79dd-4db6-be35-9d437d4dcc7e.png" width="550">
