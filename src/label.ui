@@ -50,24 +50,6 @@
      <string>Save Image</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="save_label_button">
-    <property name="geometry">
-     <rect>
-      <x>880</x>
-      <y>290</y>
-      <width>101</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Save Label</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="labelview">
     <property name="geometry">
      <rect>
@@ -252,6 +234,36 @@
     <item>
      <property name="text">
       <string>to small dot</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="save_comboBox">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>290</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <item>
+     <property name="text">
+      <string>Save Label</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>only clusters</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>all pixles</string>
      </property>
     </item>
    </widget>

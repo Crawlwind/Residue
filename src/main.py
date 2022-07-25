@@ -8,6 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from pyparsing import col
 
 from slic import *
 # from label import *
@@ -42,8 +43,8 @@ class LabelPage(QMainWindow):
         self.save_image_button = self.findChild(QPushButton,"save_image_button")
 
         self.edit_button = self.findChild(QPushButton,"edit_button")
-        self.save_label_button = self.findChild(QPushButton,"save_label_button")
         self.apply_comboBox = self.findChild(QComboBox,"apply_comboBox")
+        self.save_comboBox = self.findChild(QComboBox,"save_comboBox")
 
         ## Button link 
         self.quicklabel_button.clicked.connect(self.quicklabel)
@@ -52,8 +53,8 @@ class LabelPage(QMainWindow):
         self.save_image_button.clicked.connect(self.save_image)
 
         self.edit_button.clicked.connect(self.edit)
-        self.save_label_button.clicked.connect(self.save_label)
         self.apply_comboBox.activated.connect(self.apply_label_combo)
+        self.save_comboBox.activated.connect(self.save_label_combo)
 
         # Image view settings(QLabel)
         self.labelview = self.findChild(QLabel,"labelview")
@@ -240,7 +241,7 @@ class LabelPage(QMainWindow):
                 # other situation
                 else:
                     msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Information)
+                    msg.setIcon(QMessageBox.Critical)
                     msg.setText("Please check the spelling of the label!")
                     font = msg.font()
                     font.setPointSize(12)
@@ -310,8 +311,8 @@ class LabelPage(QMainWindow):
                 # other situation
                 else:
                     msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Information)
-                    msg.setText("Please check the spelling of the label.!")
+                    msg.setIcon(QMessageBox.Critical)
+                    msg.setText("Please check the spelling of the label!")
                     font = msg.font()
                     font.setPointSize(12)
                     msg.setFont(font)
@@ -378,8 +379,8 @@ class LabelPage(QMainWindow):
                 # other situation
                 else:
                     msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Information)
-                    msg.setText("Please check the spelling of the label.!")
+                    msg.setIcon(QMessageBox.Critical)
+                    msg.setText("Please check the spelling of the label!")
                     font = msg.font()
                     font.setPointSize(12)
                     msg.setFont(font)
@@ -393,48 +394,113 @@ class LabelPage(QMainWindow):
         cv2.imwrite(filename,self.tmp)
         print('Image saved as:',filename)
 
-    # export all label messages into excel
-    def save_label(self):
-        name = QFileDialog.getSaveFileName(self, 'Save File',"", "Excel(*.xlsx)")
-        # data form:
-        # belonged cluster, center_x, center_y, label
-        cluster = []
-        center_x = []
-        center_y = []
-        label_number = []
-        label_name = []
+    # export all label messages into csv file
+    def save_label_combo(self):
+        # "Save Label"
+        if self.save_comboBox.currentIndex() == 0:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("Please choose the EXACT object to save their labels.")
+            font = msg.font()
+            font.setPointSize(12)
+            msg.setFont(font)
+            msg.setWindowTitle("Warning")
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            retval = msg.exec_()
+        
+        # only clusters
+        elif self.save_comboBox.currentIndex() == 1:
+            name = QFileDialog.getSaveFileName(self, 'Save File',"", "CSV File(*.csv)")
+            # data form:
+            # belonged cluster, center_x, center_y, label
+            cluster = []
+            center_co = []
+            label_number = []
+            label_name = []
 
-        for i in range(len(SLIC_centers)):
-            x = SLIC_centers[i][3].astype(int)
-            y = SLIC_centers[i][4].astype(int)
-            if sp_label[y,x] == 1:
-                cluster.append(SLIC_clusters[y,x])
-                center_x.append(x)
-                center_y.append(y)
-                label_number.append(sp_label[y,x])
-                label_name.append("Residue")
-            elif sp_label[y,x] == -1:
-                cluster.append(SLIC_clusters[y,x])
-                center_x.append(x)
-                center_y.append(y)
-                label_number.append(sp_label[y,x])
-                label_name.append("Others")
-            else:
-                cluster.append(SLIC_clusters[y,x])
-                center_x.append(x)
-                center_y.append(y)
-                label_number.append(sp_label[y,x])
-                label_name.append("Not defined")
+            for i in range(len(SLIC_centers)):
+                x = SLIC_centers[i][3].astype(int)
+                y = SLIC_centers[i][4].astype(int)
+                if sp_label[y,x] == 1:
+                    cluster.append(SLIC_clusters[y,x])
+                    center_co.append((x,y))
+                    label_number.append(sp_label[y,x])
+                    label_name.append("Residue")
+                elif sp_label[y,x] == -1:
+                    cluster.append(SLIC_clusters[y,x])
+                    center_co.append((x,y))
+                    label_number.append(sp_label[y,x])
+                    label_name.append("Others")
+                else:
+                    cluster.append(SLIC_clusters[y,x])
+                    center_co.append((x,y))
+                    label_number.append(sp_label[y,x])
+                    label_name.append("Not defined")
 
-        col1 = "cluster"
-        col2 = "center_x"
-        col3 = "center_y"
-        col4 = "label_number"
-        col5 = "label_name"
+            col1 = "cluster"
+            col2 = "center location"
+            col3 = "label_number"
+            col4 = "label_name"
 
-        data = pd.DataFrame({col1:cluster,col2:center_x,col3:center_y,col4:label_number,col5:label_name})
-        data.to_excel(name[0], sheet_name='sheet1', index=False)
-        print('File saved as:',name[0])
+            data = pd.DataFrame({col1:cluster,col2:center_co,col3:label_number,col4:label_name})
+            data.to_csv(name[0], index=False)
+            print('File saved as:',name[0])
+
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("File saved successfully!")
+            font = msg.font()
+            font.setPointSize(12)
+            msg.setFont(font)
+            msg.setWindowTitle("Success Message")
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            retval = msg.exec_()
+
+        # all pixels
+        elif self.save_comboBox.currentIndex() == 2:
+            name = QFileDialog.getSaveFileName(self, 'Save File',"", "CSV File(*.csv)")
+            # data form:
+            # belonged cluster, center_x, center_y, label
+            belonged_cluster = []
+            coordinate = []
+            l_number = []
+            l_name = []
+            for i in range(SLIC_width):
+                for j in range(SLIC_height):
+                    if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
+                        if sp_label[j,i] == 1:
+                            belonged_cluster.append(SLIC_clusters[j,i])
+                            coordinate.append((i,j))
+                            l_number.append(sp_label[j,i])
+                            l_name.append("Residue")
+                        elif sp_label[j,i] == -1:
+                            belonged_cluster.append(SLIC_clusters[j,i])
+                            coordinate.append((i,j))
+                            l_number.append(sp_label[j,i])
+                            l_name.append("Others")
+                        elif sp_label[j,i] == -5:
+                            belonged_cluster.append(SLIC_clusters[j,i])
+                            coordinate.append((i,j))
+                            l_number.append(sp_label[j,i])
+                            l_name.append("Not defined")
+
+            col1 = "belonged cluster"
+            col2 = "location"
+            col3 = "label_number"
+            col4 = "label_name"
+            data = pd.DataFrame({"belonged cluster":belonged_cluster,"location":coordinate,"label_number":l_number,"label_name":l_name})
+            data.to_csv(name[0], index=False)
+            print('File saved as:',name[0])
+
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("File saved successfully!")
+            font = msg.font()
+            font.setPointSize(12)
+            msg.setFont(font)
+            msg.setWindowTitle("Success Message")
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            retval = msg.exec_()
 
 '''
     First Page: Main Window
