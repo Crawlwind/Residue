@@ -42,8 +42,8 @@ class LabelPage(QMainWindow):
         self.save_image_button = self.findChild(QPushButton,"save_image_button")
 
         self.edit_button = self.findChild(QPushButton,"edit_button")
-        self.apply_button = self.findChild(QPushButton,"apply_button")
         self.save_label_button = self.findChild(QPushButton,"save_label_button")
+        self.apply_comboBox = self.findChild(QComboBox,"apply_comboBox")
 
         ## Button link 
         self.quicklabel_button.clicked.connect(self.quicklabel)
@@ -52,8 +52,8 @@ class LabelPage(QMainWindow):
         self.save_image_button.clicked.connect(self.save_image)
 
         self.edit_button.clicked.connect(self.edit)
-        self.apply_button.clicked.connect(self.apply_label)
         self.save_label_button.clicked.connect(self.save_label)
+        self.apply_comboBox.activated.connect(self.apply_label_combo)
 
         # Image view settings(QLabel)
         self.labelview = self.findChild(QLabel,"labelview")
@@ -166,57 +166,226 @@ class LabelPage(QMainWindow):
     def finish_edit(self):
         self.sp_label.setText(self.labelEdit.text())
         self.labelEdit.hide()
-    
-    # save edited label
-    def apply_label(self):
+
+    def apply_label_combo(self):
         x = self.tmppos[0]
         y = self.tmppos[1]
         dx = unit_size[0]
         dy = unit_size[1]
         k = SLIC_clusters[y,x]
 
-        if self.sp_label.text() == 'Residue':
-            if k == -1: # for dots
-                for i in range(x-dx,x+dx):
-                    for j in range(y-dy,y+dy):
-                        if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
-                            if sp_label[j,i] == -5:
-                                sp_label[j,i] = 1
-            else: # for superpixels
-                for i in range(SLIC_width):
-                    for j in range(SLIC_height):
-                        if SLIC_clusters[j,i] == k:
-                            sp_label[j,i] = 1
-
-        elif self.sp_label.text() == 'Others':
-            if k == -1: # for dots
-                for i in range(x-dx,x+dx):
-                    for j in range(y-dy,y+dy):
-                        if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
-                            if sp_label[j,i] == -5:
-                                sp_label[j,i] = -1
-            else: # for superpixels
-                for i in range(SLIC_width):
-                    for j in range(SLIC_height):
-                        if SLIC_clusters[j,i] == k:
-                            sp_label[j,i] = -1
-        else:
-            # QMessageBox.about(self, "Error", "Please check the spelling of the label.")
+        # only choose "Apply", activate warning for re-choose
+        if self.apply_comboBox.currentIndex() == 0:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
-        
-            # setting message for Message Box
-            msg.setText("Warning: Please check the spelling of the label.")
+            msg.setText("Please choose the EXACT object to apply current label.")
             font = msg.font()
             font.setPointSize(12)
             msg.setFont(font)
             msg.setWindowTitle("Warning")
-            
-            # declaring buttons on Message Box
             msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-            
-            # start the app
             retval = msg.exec_()
+
+        # to superpixel
+        elif self.apply_comboBox.currentIndex() == 1:
+            if k == -1:
+                # if it's a dot in fact
+                # warning for choosing the right object
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("Please choose the RIGHT object to apply current label.<br>Maybe you should choose 'to large/small dot'.")
+                font = msg.font()
+                font.setPointSize(12)
+                msg.setFont(font)
+                msg.setWindowTitle("Warning")
+                msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                retval = msg.exec_()
+
+            else:
+                # for residue
+                if self.sp_label.text() == 'Residue':
+                    for i in range(SLIC_width):
+                        for j in range(SLIC_height):
+                            if SLIC_clusters[j,i] == k:
+                                sp_label[j,i] = 1
+
+                    # claim success message
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Apply to the 'Residue' superpixel successfully!")
+                    font = msg.font()
+                    font.setPointSize(12)
+                    msg.setFont(font)
+                    msg.setWindowTitle("Success Message")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    retval = msg.exec_()
+
+                # for others
+                elif self.sp_label.text() == 'Others':
+                    for i in range(SLIC_width):
+                        for j in range(SLIC_height):
+                            if SLIC_clusters[j,i] == k:
+                                sp_label[j,i] = -1
+                    # claim success message
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Apply to the 'Others' superpixel successfully!")
+                    font = msg.font()
+                    font.setPointSize(12)
+                    msg.setFont(font)
+                    msg.setWindowTitle("Success Message")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    retval = msg.exec_()
+                
+                # other situation
+                else:
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Please check the spelling of the label!")
+                    font = msg.font()
+                    font.setPointSize(12)
+                    msg.setFont(font)
+                    msg.setWindowTitle("Error")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    retval = msg.exec_()
+
+        # to large dot
+        elif self.apply_comboBox.currentIndex() == 2:
+            if k != -1:
+                # if it's a superpixel in fact
+                # warning for choosing the right object
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+            
+                # setting message for Message Box
+                msg.setText("Please choose the RIGHT object to apply current label.<br>Maybe you should choose 'to superpixel'.")
+                font = msg.font()
+                font.setPointSize(12)
+                msg.setFont(font)
+                msg.setWindowTitle("Warning")
+                
+                # declaring buttons on Message Box
+                msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                retval = msg.exec_()
+
+            else:
+                # for residue
+                if self.sp_label.text() == 'Residue':
+                    for i in range(x-dx,x+dx):
+                        for j in range(y-dy,y+dy):
+                            if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
+                                if sp_label[j,i] == -5:
+                                    sp_label[j,i] = 1
+
+                    # claim success message
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Apply to the 'Residue' large dot successfully!")
+                    font = msg.font()
+                    font.setPointSize(12)
+                    msg.setFont(font)
+                    msg.setWindowTitle("Success Message")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    retval = msg.exec_()
+
+                # for others
+                elif self.sp_label.text() == 'Others':
+                    for i in range(x-dx,x+dx):
+                        for j in range(y-dy,y+dy):
+                            if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
+                                if sp_label[j,i] == -5:
+                                    sp_label[j,i] = -1
+
+                    # claim success message
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Apply to the 'Others' large dot successfully!")
+                    font = msg.font()
+                    font.setPointSize(12)
+                    msg.setFont(font)
+                    msg.setWindowTitle("Success Message")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    retval = msg.exec_()
+
+                # other situation
+                else:
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Please check the spelling of the label.!")
+                    font = msg.font()
+                    font.setPointSize(12)
+                    msg.setFont(font)
+                    msg.setWindowTitle("Error")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    retval = msg.exec_()
+            
+        # to small dot
+        elif self.apply_comboBox.currentIndex() == 3:
+            if k != -1:
+                # if it's a superpixel in fact
+                # warning for choosing the right object
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("Please choose the RIGHT object to apply current label.<br>Maybe you should choose 'to superpixel'.")
+                font = msg.font()
+                font.setPointSize(12)
+                msg.setFont(font)
+                msg.setWindowTitle("Warning")
+                msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                retval = msg.exec_()
+
+            else:
+                dx = dx//4
+                dy = dy//4
+                # for residue
+                if self.sp_label.text() == 'Residue':
+                    for i in range(x-dx,x+dx):
+                        for j in range(y-dy,y+dy):
+                            if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
+                                if sp_label[j,i] == -5:
+                                    sp_label[j,i] = 1
+
+                    # claim success message
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Apply to the 'Residue' small dot successfully!")
+                    font = msg.font()
+                    font.setPointSize(12)
+                    msg.setFont(font)
+                    msg.setWindowTitle("Success Message")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    retval = msg.exec_()
+
+                # for others
+                elif self.sp_label.text() == 'Others':
+                    for i in range(x-dx,x+dx):
+                        for j in range(y-dy,y+dy):
+                            if 0 <= i < SLIC_width and 0 <= j < SLIC_height:
+                                if sp_label[j,i] == -5:
+                                    sp_label[j,i] = -1
+                                    
+                    # claim success message
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Apply to the 'Others' small dot successfully!")
+                    font = msg.font()
+                    font.setPointSize(12)
+                    msg.setFont(font)
+                    msg.setWindowTitle("Success Message")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    retval = msg.exec_()
+
+                # other situation
+                else:
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Please check the spelling of the label.!")
+                    font = msg.font()
+                    font.setPointSize(12)
+                    msg.setFont(font)
+                    msg.setWindowTitle("Error")
+                    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                    retval = msg.exec_()
 
     def save_image(self):
         filename = QFileDialog.getSaveFileName(filter="JPG(*.jpg);;PNG(*.png);;TIFF(*.tiff);;BMP(*.bmp)")[0]
@@ -224,9 +393,9 @@ class LabelPage(QMainWindow):
         cv2.imwrite(filename,self.tmp)
         print('Image saved as:',filename)
 
-    # change all label messages into csv/txt file
+    # export all label messages into excel
     def save_label(self):
-        name = QFileDialog.getSaveFileName(self, 'Save File',"", "Text File(*.txt);;Excel(*.xlsx)")
+        name = QFileDialog.getSaveFileName(self, 'Save File',"", "Excel(*.xlsx)")
         # data form:
         # belonged cluster, center_x, center_y, label
         cluster = []
@@ -265,7 +434,7 @@ class LabelPage(QMainWindow):
 
         data = pd.DataFrame({col1:cluster,col2:center_x,col3:center_y,col4:label_number,col5:label_name})
         data.to_excel(name[0], sheet_name='sheet1', index=False)
-
+        print('File saved as:',name[0])
 
 '''
     First Page: Main Window
