@@ -3,7 +3,6 @@ import numpy
 import cv2
 import imutils
 import pandas as pd
-import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtGui import *
@@ -27,8 +26,7 @@ class LabelPage(QMainWindow):
         """ 
             load UI file
         """
-        ui_path = os.path.dirname(os.path.abspath(__file__))
-        uic.loadUi(os.path.join(ui_path, "second.ui"),self)
+        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\src\\second.ui",self)
         self.setWindowTitle("Label Page")
 
         """
@@ -514,8 +512,7 @@ class SegApp(QMainWindow):
         """ 
             load UI file
         """
-        ui_path = os.path.dirname(os.path.abspath(__file__))
-        uic.loadUi(os.path.join(ui_path, "first.ui"),self)
+        uic.loadUi("C:\\Lessons\\Su2022\\Residue\\src\\Residue\\src\\first.ui",self)
         self.setWindowTitle("Residue Sensing")
 
         """
